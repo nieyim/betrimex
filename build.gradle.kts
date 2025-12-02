@@ -41,7 +41,8 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     implementation("org.springframework.boot:spring-boot-starter-validation")
-
+    implementation("com.google.zxing:core:3.5.2")
+    implementation("com.google.zxing:javase:3.5.2")
     implementation("org.springframework.security:spring-security-core:6.4.1")
     implementation("org.springframework.security:spring-security-web:6.4.1")
     implementation("org.springframework.security:spring-security-config:6.4.1")
