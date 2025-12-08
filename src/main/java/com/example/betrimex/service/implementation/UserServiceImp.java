@@ -1,10 +1,11 @@
-package com.example.betrimex.service;
+package com.example.betrimex.service.implementation;
 
 import com.example.betrimex.mapper.UserMapper;
 import com.example.betrimex.model.User;
 import com.example.betrimex.model.dto.request.UserRequest;
 import com.example.betrimex.model.dto.response.UserResponse;
 import com.example.betrimex.repository.UserRepository;
+import com.example.betrimex.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -12,7 +13,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class UserServiceImp implements UserService{
+public class UserServiceImp implements UserService {
 
     private final UserRepository userRepository;
     private final UserMapper userMapper;

@@ -1,4 +1,4 @@
-package com.example.betrimex.service;
+package com.example.betrimex.service.implementation;
 
 import com.example.betrimex.config.JwtService;
 import com.example.betrimex.model.Token;
@@ -8,6 +8,7 @@ import com.example.betrimex.model.dto.request.AuthRequest;
 import com.example.betrimex.model.dto.response.AuthResponse;
 import com.example.betrimex.repository.TokenRepository;
 import com.example.betrimex.repository.UserRepository;
+import com.example.betrimex.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;

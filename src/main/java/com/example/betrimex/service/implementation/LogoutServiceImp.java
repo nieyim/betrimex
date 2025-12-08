@@ -1,4 +1,4 @@
-package com.example.betrimex.service;
+package com.example.betrimex.service.implementation;
 
 import com.example.betrimex.model.Token;
 import com.example.betrimex.repository.TokenRepository;
