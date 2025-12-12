@@ -9,6 +9,7 @@ import com.example.betrimex.model.dto.response.*;
 import com.example.betrimex.repository.ProductRepository;
 import com.example.betrimex.repository.QrDataRepository;
 import com.example.betrimex.service.AuditLogService;
+import com.example.betrimex.service.ConfigService;
 import com.example.betrimex.service.ProductService;
 import com.example.betrimex.utils.ConvertDateTime;
 import com.example.betrimex.utils.GenerateLotCode;
@@ -34,19 +35,11 @@ import static com.example.betrimex.model.Constants.*;
 @RequiredArgsConstructor
 public class ProductServiceImp implements ProductService {
 
-    @Value("https://dev.it-cpi002-rt.cfapps.ap10.hana.ondemand.com/http/api/shipments")
-    private String betrimex_api_curl;
-
-    @Value("c2ItNzdiYTBhODQtYzJiOS00ZDExLTg4ZWYtNDFjYmY2ZjI4ODE5IWIzODh8aXQtcnQtZGV2IWI4MDpBNGFrNWpTOWFBRnpmRS93UXlrenkrRnU5RXM9")
-    private String betrimex_basic_auth;
-
-    @Value("AI_COUNT")
-    private String ai_count;
-
     private final QrDataRepository qrDataRepository;
     private final ProductMapper productMapper;
     private final ProductRepository productRepository;
     private final AuditLogService auditLogService;
+    private final ConfigService configService;
 
     @Override
     public BaseResponse saveProduct(CreateProductRequest request) {
@@ -56,7 +49,7 @@ public class ProductServiceImp implements ProductService {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setAccept(List.of(MediaType.APPLICATION_JSON));
-        headers.set(AUTHORIZATION_HEADER, AUTHORIZATION_BASIC + betrimex_basic_auth);
+        headers.set(AUTHORIZATION_HEADER, AUTHORIZATION_BASIC + configService.getValueByKey("BETRIMEX_BASIC_AUTH"));
 
         QrData qrData = qrDataRepository.findById(request.getQrData()).orElseThrow(() -> new RuntimeException("QR not found with id: " + request.getQrData()));;
 
@@ -68,11 +61,11 @@ public class ProductServiceImp implements ProductService {
 
         try {
             if (product.getLotId() != null) {
-                product.setCountType(ai_count);
+                product.setCountType(configService.getValueByKey("AI_COUNT"));
 
                 RetrieveCoconutCountResponse dto = new RetrieveCoconutCountResponse();
                 dto.setId(UUID.randomUUID().toString());
-                dto.setMachineId("Machine 1");
+                dto.setMachineId(configService.getValueByKey("MC_MACHINE_NAME"));
                 dto.setLotId(qrData.getLotId());
                 dto.setLotIdDetail(qrData.getLotIdDetail());
                 dto.setQuantity(request.getQuantity());
@@ -99,7 +92,7 @@ public class ProductServiceImp implements ProductService {
             } else {
                 long countToday = productRepository.countRedCardLotToday();
                 product.setRedCardLot(GenerateLotCode.generateRedCardLot(countToday));
-                product.setCountType("MANUAL INPUT");
+                product.setCountType(configService.getValueByKey("MANUAL_INPUT"));
 
 //                Boolean isSendToCloud = cloudInsertService.insertCoconutRedTagBatch(product);
 

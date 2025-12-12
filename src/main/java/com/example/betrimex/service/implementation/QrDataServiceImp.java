@@ -7,6 +7,7 @@ import com.example.betrimex.model.dto.response.BTMQrDataResponse;
 import com.example.betrimex.model.dto.response.QrDataResponse;
 import com.example.betrimex.repository.QrDataRepository;
 import com.example.betrimex.service.AuditLogService;
+import com.example.betrimex.service.ConfigService;
 import com.example.betrimex.service.QrDataService;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -50,15 +51,10 @@ public class QrDataServiceImp implements QrDataService {
     private final AuditLogService auditLogService;
     private final QrDataRepository qrDataRepository;
     private final QrDataMapper qrDataMapper;
+    private final ConfigService configService;
 
     @Value("${upload.qr.dir}")
     private String uploadDir;
-
-    @Value("https://dev.it-cpi002-rt.cfapps.ap10.hana.ondemand.com/http/api/shipments")
-    private String betrimex_api_curl;
-
-    @Value("c2ItNzdiYTBhODQtYzJiOS00ZDExLTg4ZWYtNDFjYmY2ZjI4ODE5IWIzODh8aXQtcnQtZGV2IWI4MDpBNGFrNWpTOWFBRnpmRS93UXlrenkrRnU5RXM9")
-    private String betrimex_basic_auth;
 
     @Override
     public Page<QrDataResponse> getQrDataByParams(QrDataRequest request, Pageable pageable) {
@@ -79,11 +75,11 @@ public class QrDataServiceImp implements QrDataService {
         RestTemplate restTemplate = new RestTemplate();
 
         HttpHeaders headers = new HttpHeaders();
-        headers.set(AUTHORIZATION_HEADER, AUTHORIZATION_BASIC + betrimex_basic_auth);
+        headers.set(AUTHORIZATION_HEADER, AUTHORIZATION_BASIC + configService.getValueByKey("BETRIMEX_BASIC_AUTH"));
         headers.set("Accept", "application/json");
 
         HttpEntity<String> entity = new HttpEntity<>(headers);
-        String apiUrl = betrimex_api_curl + "?qrcode=" + qrTextJson.trim();
+        String apiUrl = configService.getValueByKey("BETRIMEX_API_CURL") + "?qrcode=" + qrTextJson.trim();
 
         ResponseEntity<String> response;
         try {
@@ -160,11 +156,11 @@ public class QrDataServiceImp implements QrDataService {
             RestTemplate restTemplate = new RestTemplate();
 
             HttpHeaders headers = new HttpHeaders();
-            headers.set(AUTHORIZATION_HEADER, AUTHORIZATION_BASIC + betrimex_basic_auth);
+            headers.set(AUTHORIZATION_HEADER, AUTHORIZATION_BASIC + configService.getValueByKey("BETRIMEX_BASIC_AUTH"));
             headers.set("Accept", "application/json");
 
             HttpEntity<String> entity = new HttpEntity<>(headers);
-            String apiUrl = betrimex_api_curl + "?qrcode=" + qrText.trim();
+            String apiUrl = configService.getValueByKey("BETRIMEX_API_CURL") + "?qrcode=" + qrText.trim();
 
             ResponseEntity<JsonNode> restResponse = restTemplate.exchange(apiUrl, HttpMethod.GET, entity, JsonNode.class);
             JsonNode rootNode = restResponse.getBody();
