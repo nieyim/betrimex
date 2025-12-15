@@ -1,27 +1,38 @@
 package com.example.betrimex.service.implementation;
 
+import com.example.betrimex.mapper.AuditLogMapper;
 import com.example.betrimex.model.AuditLog;
 import com.example.betrimex.model.dto.request.AuditLogRequest;
 import com.example.betrimex.model.dto.response.AuditLogResponse;
 import com.example.betrimex.repository.AuditLogRepository;
 import com.example.betrimex.service.AuditLogService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class AuditLogServiceImp implements AuditLogService {
 
     private final AuditLogRepository auditLogRepository;
-
+    private final AuditLogMapper auditLogMapper;
 
     @Override
     public Page<AuditLogResponse> getAuditLogByParams(AuditLogRequest request, Pageable pageable) {
-        return null;
+        Page<AuditLog> auditList = auditLogRepository.getAuditLogsByCreatedAtBetween(pageable, request.getFromDate(), request.getToDate());
+
+        Pageable sortedPageable = PageRequest.of(
+                pageable.getPageNumber(),
+                pageable.getPageSize(),
+                Sort.by(Sort.Direction.DESC, "createdAt"));
+
+        List<AuditLogResponse> auditTrailResponses = auditList.stream()
+                .map(auditLogMapper::toAuditLogResponse)
+                .collect(Collectors.toList());
+        return new PageImpl<>(auditTrailResponses, sortedPageable, auditList.getTotalElements());
     }
 
     @Override

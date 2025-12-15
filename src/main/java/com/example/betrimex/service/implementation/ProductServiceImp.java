@@ -5,6 +5,7 @@ import com.example.betrimex.model.BaseResponse;
 import com.example.betrimex.model.Product;
 import com.example.betrimex.model.QrData;
 import com.example.betrimex.model.dto.request.CreateProductRequest;
+import com.example.betrimex.model.dto.request.ProductRequest;
 import com.example.betrimex.model.dto.response.*;
 import com.example.betrimex.repository.ProductRepository;
 import com.example.betrimex.repository.QrDataRepository;
@@ -17,6 +18,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.*;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpStatusCodeException;
@@ -27,6 +29,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static com.example.betrimex.model.Constants.*;
 
@@ -51,7 +54,8 @@ public class ProductServiceImp implements ProductService {
         headers.setAccept(List.of(MediaType.APPLICATION_JSON));
         headers.set(AUTHORIZATION_HEADER, AUTHORIZATION_BASIC + configService.getValueByKey("BETRIMEX_BASIC_AUTH"));
 
-        QrData qrData = qrDataRepository.findById(request.getQrData()).orElseThrow(() -> new RuntimeException("QR not found with id: " + request.getQrData()));;
+        QrData qrData = qrDataRepository.findById(request.getQrData()).orElseThrow(() -> new RuntimeException("QR not found with id: " + request.getQrData()));
+        ;
 
         Product product = productMapper.map(request);
         product.setId(UUID.randomUUID().toString());
@@ -128,6 +132,20 @@ public class ProductServiceImp implements ProductService {
         }
 
         return response;
+    }
+
+    @Override
+    public Page<ProductResponse> getProductByParams(ProductRequest request, Pageable pageable) {
+        Page<Product> productList = productRepository.getProductsByCreatedAtBetweenAndIsSyncOrderByCreatedAtDesc(request.getFromDate(), request.getToDate(), request.getIsSync(), pageable);
+        Pageable sortedPageable = PageRequest.of(
+                pageable.getPageNumber(),
+                pageable.getPageSize(),
+                Sort.by(Sort.Direction.DESC, "createdAt"));
+
+        List<ProductResponse> auditTrailResponses = productList.stream()
+                .map(productMapper::toProductResponse)
+                .collect(Collectors.toList());
+        return new PageImpl<>(auditTrailResponses, sortedPageable, productList.getTotalElements());
     }
 
     @Override
@@ -276,4 +294,6 @@ public class ProductServiceImp implements ProductService {
 
         return response;
     }
+
+
 }
