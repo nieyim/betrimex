@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport
+        xmlns="http://jasperreports.sourceforge.net/jasperreports"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components"
+        xsi:schemaLocation="
+            http://jasperreports.sourceforge.net/jasperreports
+            http://jasperreports.sourceforge.net/xsd/jasperreport.xsd
+            http://jasperreports.sourceforge.net/jasperreports/components
+            http://jasperreports.sourceforge.net/xsd/components.xsd"
+        name="lot_history_single"
+        pageWidth="595"
+        pageHeight="842"
+        columnWidth="555"
+        leftMargin="20"
+        rightMargin="20"
+        topMargin="20"
+        bottomMargin="20">
+
+
+    <!-- ===== STYLE ===== -->
+
+        <style name="BaseStyle" isDefault="true" fontName="DejaVu Sans" fontSize="11" pdfEncoding="Identity-H" isPdfEmbedded="true"/>
+
+    <!-- ===== SUB DATASET ===== -->
+    <subDataset name="LotHistoryDataset">
+        <field name="lotNumber" class="java.lang.String"/>
+        <field name="supplier" class="java.lang.String"/>
+        <field name="vehiclePlate" class="java.lang.String"/>
+        <field name="machineId" class="java.lang.String"/>
+        <field name="quantity" class="java.lang.Integer"/>
+        <field name="startTime" class="java.util.Date"/>
+        <field name="endTime" class="java.util.Date"/>
+        <field name="createdAt" class="java.util.Date"/>
+    </subDataset>
+
+    <!-- ===== PARAM ===== -->
+    <parameter name="p_lotHistory"
+               class="net.sf.jasperreports.engine.JRDataSource"/>
+
+    <!-- ===== TITLE ===== -->
+    <title>
+        <band height="40">
+            <staticText>
+                <reportElement style="BaseStyle" x="0" y="0" width="555" height="30"/>
+                <textElement textAlignment="Center">
+                    <font size="16" isBold="true"/>
+                </textElement>
+                <text><![CDATA[LỊCH SỬ LOT SẢN PHẨM]]></text>
+            </staticText>
+        </band>
+    </title>
+
+    <!-- ===== DETAIL ===== -->
+    <detail>
+        <band height="300">
+
+            <componentElement>
+                <reportElement x="0" y="0" width="555" height="300"/>
+
+                <jr:table>
+
+                    <datasetRun subDataset="LotHistoryDataset">
+                        <dataSourceExpression><![CDATA[$P{p_lotHistory}]]></dataSourceExpression>
+                    </datasetRun>
+
+                    <!-- LOT -->
+                    <jr:column width="70">
+                        <jr:columnHeader height="25">
+                            <staticText>
+                                <reportElement style="BaseStyle" x="0" y="0" width="70" height="25"/>
+                                <text><![CDATA[Lot]]></text>
+                            </staticText>
+                        </jr:columnHeader>
+                        <jr:detailCell height="20">
+                            <textField>
+                                <reportElement style="BaseStyle" x="0" y="0" width="70" height="20"/>
+                                <textFieldExpression><![CDATA[$F{lotNumber}]]></textFieldExpression>
+                            </textField>
+                        </jr:detailCell>
+                    </jr:column>
+
+                    <!-- SUPPLIER -->
+                    <jr:column width="130">
+                        <jr:columnHeader height="25">
+                            <staticText>
+                                <reportElement style="BaseStyle" x="0" y="0" width="130" height="25"/>
+                                <text><![CDATA[Supplier]]></text>
+                            </staticText>
+                        </jr:columnHeader>
+                        <jr:detailCell height="20">
+                            <textField isStretchWithOverflow="true">
+                                <reportElement style="BaseStyle" x="0" y="0" width="130" height="20"/>
+                                <textFieldExpression><![CDATA[$F{supplier}]]></textFieldExpression>
+                            </textField>
+                        </jr:detailCell>
+                    </jr:column>
+
+
+                    <!-- VEHICLE -->
+                    <jr:column width="80">
+                        <jr:columnHeader height="25">
+                            <staticText>
+                                <reportElement style="BaseStyle" x="0" y="0" width="80" height="25"/>
+                                <text><![CDATA[Vehicle]]></text>
+                            </staticText>
+                        </jr:columnHeader>
+                        <jr:detailCell height="20">
+                            <textField>
+                                <reportElement style="BaseStyle" x="0" y="0" width="80" height="20"/>
+                                <textFieldExpression><![CDATA[$F{vehiclePlate}]]></textFieldExpression>
+                            </textField>
+                        </jr:detailCell>
+                    </jr:column>
+
+                    <!-- MACHINE -->
+                    <jr:column width="70">
+                        <jr:columnHeader height="25">
+                            <staticText>
+                                <reportElement style="BaseStyle" x="0" y="0" width="70" height="25"/>
+                                <text><![CDATA[Machine]]></text>
+                            </staticText>
+                        </jr:columnHeader>
+                        <jr:detailCell height="20">
+                            <textField>
+                                <reportElement style="BaseStyle" x="0" y="0" width="70" height="20"/>
+                                <textFieldExpression><![CDATA[$F{machineId}]]></textFieldExpression>
+                            </textField>
+                        </jr:detailCell>
+                    </jr:column>
+
+                    <!-- QTY -->
+                    <jr:column width="50">
+                        <jr:columnHeader height="25">
+                            <staticText>
+                                <reportElement style="BaseStyle" x="0" y="0" width="50" height="25"/>
+                                <text><![CDATA[Qty]]></text>
+                            </staticText>
+                        </jr:columnHeader>
+                        <jr:detailCell height="20">
+                            <textField>
+                                <reportElement style="BaseStyle" x="0" y="0" width="50" height="20"/>
+                                <textFieldExpression><![CDATA[$F{quantity}]]></textFieldExpression>
+                            </textField>
+                        </jr:detailCell>
+                    </jr:column>
+
+                    <!-- START -->
+                    <jr:column width="95">
+                        <jr:columnHeader height="25">
+                            <staticText>
+                                <reportElement style="BaseStyle" x="0" y="0" width="95" height="25"/>
+                                <text><![CDATA[Start Time]]></text>
+                            </staticText>
+                        </jr:columnHeader>
+                        <jr:detailCell height="20">
+                            <textField pattern="dd/MM/yyyy HH:mm">
+                                <reportElement style="BaseStyle" x="0" y="0" width="95" height="20"/>
+                                <textFieldExpression><![CDATA[$F{startTime}]]></textFieldExpression>
+                            </textField>
+                        </jr:detailCell>
+                    </jr:column>
+
+                    <!-- END -->
+                    <jr:column width="95">
+                        <jr:columnHeader height="25">
+                            <staticText>
+                                <reportElement style="BaseStyle" x="0" y="0" width="95" height="25"/>
+                                <text><![CDATA[End Time]]></text>
+                            </staticText>
+                        </jr:columnHeader>
+                        <jr:detailCell height="20">
+                            <textField pattern="dd/MM/yyyy HH:mm">
+                                <reportElement style="BaseStyle" x="0" y="0" width="95" height="20"/>
+                                <textFieldExpression><![CDATA[$F{endTime}]]></textFieldExpression>
+                            </textField>
+                        </jr:detailCell>
+                    </jr:column>
+
+                </jr:table>
+            </componentElement>
+
+        </band>
+    </detail>
+
+</jasperReport>

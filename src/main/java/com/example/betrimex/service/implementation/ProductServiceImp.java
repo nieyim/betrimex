@@ -17,6 +17,8 @@ import com.example.betrimex.utils.GenerateLotCode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import net.sf.jasperreports.engine.JRDataSource;
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.*;
 import org.springframework.http.*;
@@ -24,10 +26,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
 
-import java.time.DayOfWeek;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
+import java.time.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -295,5 +294,47 @@ public class ProductServiceImp implements ProductService {
         return response;
     }
 
+    @Override
+    public Map<String, Object> loadDataPDF(String id) {
+        var map = new HashMap<String, Object>();
+        Product product = productRepository.findById(id).orElseThrow(() -> new RuntimeException("Lot not found"));
+        map.put("p_nhacungcap", product.getQrData().getSupplierNameBTM());
+        map.put("p_solo", product.getLotNumber());
+        map.put("p_ngaytao", convertToDate(product.getCreatedAt()));
+        map.put("p_soluong", product.getQuantity());
+        map.put("p_ketthucdem", convertToDate(product.getEndTime()));
+        map.put("p_batdaudem", convertToDate(product.getStartTime()));
+
+        return map;
+    }
+
+    @Override
+    public Map<String, Object> loadData(LocalDateTime startDate, LocalDateTime endDate) {
+        List<Product> products = productRepository.getProductsByCreatedAtBetweenOrderByCreatedAt(startDate, endDate);
+        var parameters = new HashMap<String, Object>();
+
+        List<Map<String, Object>> dataList = products.stream().map(product -> {
+            Map<String, Object> map = new HashMap<>();
+            map.put("lotNumber", product.getLotNumber());
+            map.put("supplier", product.getQrData().getSupplierNameBTM());
+            map.put("vehiclePlate", product.getVehiclePlate());
+            map.put("machineId", product.getMachineId());
+            map.put("quantity", product.getQuantity());
+            map.put("startTime", convertToDate(product.getStartTime()));
+            map.put("endTime", convertToDate(product.getEndTime()));
+            map.put("createdAt", convertToDate(product.getCreatedAt()));
+            return map;
+        }).collect(Collectors.toList());
+
+        JRDataSource dataSource = new JRBeanCollectionDataSource(dataList);
+        parameters.put("p_lotHistory", dataSource);
+
+        return parameters;
+    }
+
+    private Date convertToDate(LocalDateTime localDateTime) {
+        if (localDateTime == null) return null;
+        return Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
+    }
 
 }

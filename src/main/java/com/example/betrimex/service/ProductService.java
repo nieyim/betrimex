@@ -10,6 +10,9 @@ import com.example.betrimex.model.dto.response.ProductResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.time.LocalDateTime;
+import java.util.Map;
+
 public interface ProductService {
     BaseResponse saveProduct(CreateProductRequest request);
 
@@ -24,4 +27,8 @@ public interface ProductService {
     ProductInfoByYearResponse getProductInfoByYear();
 
     ProductInfoByMonthResponse getProductInfoByMonth();
+
+    Map<String, Object> loadDataPDF(String id);
+
+    Map<String, Object> loadData(LocalDateTime startDate, LocalDateTime endDate);
 }

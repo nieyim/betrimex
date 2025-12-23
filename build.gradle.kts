@@ -25,6 +25,7 @@ repositories {
     mavenCentral()
 }
 
+
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-jdbc")
@@ -52,6 +53,9 @@ dependencies {
     runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.12.6")
     implementation("org.mapstruct:mapstruct:1.6.3")
     annotationProcessor("org.mapstruct:mapstruct-processor:1.6.3")
+
+    implementation("net.sf.jasperreports:jasperreports:6.21.3")
+    implementation("net.sf.jasperreports:jasperreports-fonts:6.21.3")
 }
 
 tasks.withType<Test> {
